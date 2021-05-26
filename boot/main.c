@@ -30,7 +30,7 @@
  **********************************************************************/
 
 #define SECTSIZE	512
-#define ELFHDR		((struct Elf *) 0x10000) // scratch space
+#define ELFHDR		((struct Elf *) 0x10000) // scratch space sunt 21.4.7（暂存空间）
 
 void readsect(void*, uint32_t);
 void readseg(uint32_t, uint32_t, uint32_t);
@@ -41,6 +41,7 @@ bootmain(void)
 	struct Proghdr *ph, *eph;
 
 	// read 1st page off disk
+	//sunt 21.4.7 读取EFL头到ELFHDR里，个人猜测除了ELF头，Program Header也直接考了进来
 	readseg((uint32_t) ELFHDR, SECTSIZE*8, 0);
 
 	// is this a valid ELF?
@@ -48,6 +49,7 @@ bootmain(void)
 		goto bad;
 
 	// load each program segment (ignores ph flags)
+	//sunt 21.4.7 实际上是根据上面的Program Header将其对应的segment装入内存。
 	ph = (struct Proghdr *) ((uint8_t *) ELFHDR + ELFHDR->e_phoff);
 	eph = ph + ELFHDR->e_phnum;
 	for (; ph < eph; ph++)

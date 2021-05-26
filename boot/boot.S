@@ -15,8 +15,8 @@ start:
   cli                         # Disable interrupts
   cld                         # String operations increment
 
-  # Set up the important data segment registers (DS, ES, SS).
-  xorw    %ax,%ax             # Segment number zero
+  # Set up the important data segment registers (DS, ES, SS).   #sunt 21.4.9 寄存器清零
+  xorw    %ax,%ax             # Segment number zero   #sunt 21.4.9 ax寄存器清零
   movw    %ax,%ds             # -> Data Segment
   movw    %ax,%es             # -> Extra Segment
   movw    %ax,%ss             # -> Stack Segment

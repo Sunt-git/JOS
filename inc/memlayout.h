@@ -31,8 +31,8 @@
  *                     |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~| RW/--
  *                     |                              | RW/--
  *                     |   Remapped Physical Memory   | RW/--
- *                     |                              | RW/--
- *    KERNBASE, ---->  +------------------------------+ 0xf0000000      --+
+ *                     |                              | RW/--                      //此部分映射实际物理内存中从0开始的中断向量表IDT、BIOS程序、IO端口以及操作系统内核等，该部分虚拟地址 - KERNBASE 就是物理地址。
+ *    KERNBASE, ---->  +------------------------------+ 0xf0000000      --+        //sunt 21.4.9 从这到顶共256M
  *    KSTACKTOP        |     CPU0's Kernel Stack      | RW/--  KSTKSIZE   |
  *                     | - - - - - - - - - - - - - - -|                   |
  *                     |      Invalid Memory (*)      | --/--  KSTKGAP    |
@@ -46,9 +46,9 @@
  *    MMIOLIM ------>  +------------------------------+ 0xefc00000      --+
  *                     |       Memory-mapped I/O      | RW/--  PTSIZE
  * ULIM, MMIOBASE -->  +------------------------------+ 0xef800000
- *                     |  Cur. Page Table (User R-)   | R-/R-  PTSIZE
+ *                     |  Cur. Page Table (User R-)   | R-/R-  PTSIZE   //sunt 系统页目录——kern_pgdir,开放给用户只读
  *    UVPT      ---->  +------------------------------+ 0xef400000
- *                     |          RO PAGES            | R-/R-  PTSIZE
+ *                     |          RO PAGES            | R-/R-  PTSIZE   //sunt 实际物理地址里pages数组的存储位置，能管理2G的物理内存
  *    UPAGES    ---->  +------------------------------+ 0xef000000
  *                     |           RO ENVS            | R-/R-  PTSIZE
  * UTOP,UENVS ------>  +------------------------------+ 0xeec00000
@@ -156,7 +156,7 @@ typedef uint32_t pde_t;
  *
  * A second consequence is that the contents of the current page directory
  * will always be available at virtual address (UVPT + (UVPT >> PGSHIFT)), to
- * which uvpd is set in lib/entry.S.
+ * which uvpd is set in lib/entry.S. 
  */
 extern volatile pte_t uvpt[];     // VA of "virtual page table"
 extern volatile pde_t uvpd[];     // VA of current page directory
@@ -172,9 +172,10 @@ extern volatile pde_t uvpd[];     // VA of current page directory
  * You can map a struct PageInfo * to the corresponding physical address
  * with page2pa() in kern/pmap.h.
  */
+ //sunt PageInfo如何与物理地址进行映射：通过pages的索引与物理页号进行一一映射
 struct PageInfo {
 	// Next page on the free list.
-	struct PageInfo *pp_link;
+	struct PageInfo *pp_link;   //sunt 21.5.14 用于构建空闲链表
 
 	// pp_ref is the count of pointers (usually in page table entries)
 	// to this page, for pages allocated using page_alloc.

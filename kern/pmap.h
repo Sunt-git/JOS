@@ -55,9 +55,13 @@ void	mem_init(void);
 void	page_init(void);
 struct PageInfo *page_alloc(int alloc_flags);
 void	page_free(struct PageInfo *pp);
+/*
+	这三个函数都是对线性地址va与物理地址pa之间的映射关系进行操作。
+*/
 int	page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm);
 void	page_remove(pde_t *pgdir, void *va);
 struct PageInfo *page_lookup(pde_t *pgdir, void *va, pte_t **pte_store);
+
 void	page_decref(struct PageInfo *pp);
 
 void	tlb_invalidate(pde_t *pgdir, void *va);
