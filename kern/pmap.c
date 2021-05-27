@@ -95,7 +95,7 @@ boot_alloc(uint32_t n)
 	// to any kernel code or global variables.
 	if (!nextfree) {
 		extern char end[];   //sunt 21.4.18 end，bss？？？
-		nextfree = ROUNDUP((char *) end, PGSIZE);   //sunt 21.4.18 ROUNDUP？？？
+		nextfree = ROUNDUP((char *) end, PGSIZE);   //sunt 21.4.18 ROUNDUP？？？aaa
 	}
 
 	// Allocate a chunk large enough to hold 'n' bytes, then update
